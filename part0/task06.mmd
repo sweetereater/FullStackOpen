@@ -6,6 +6,6 @@ sequenceDiagram
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa. With payload { content: ..., date: ... } and Content-type: application/json
     activate server
-    server -->>browser: Status code - 201 (Created); Response - {"message":"note created"}
+    server -->>browser: Status code - 201 (Created); Response {"message":"note created"}
     deactivate server
 
