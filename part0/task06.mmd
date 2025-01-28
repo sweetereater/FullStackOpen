@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    Note right of browser: We create new note object, push it to notes array, call redrawNotes function and call sendToServer function
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa. With payload { content: ..., date: ... } and Content-type: application/json
+    activate server
+    server -->>browser: Status code - 201 (Created); Response - {"message":"note created"}
+    deactivate server
+
