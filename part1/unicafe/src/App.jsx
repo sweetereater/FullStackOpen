@@ -7,16 +7,30 @@ const Statistics = ({ good, neutral, bad, all, average, positiveProcent }) => {
   }
 
   return (
-    <>
-      <p>Good - {good}</p>
-      <p>Neutral - {neutral}</p>
-      <p>Bad - {bad}</p>
-      <p>All - {all}</p>
-      <p>Average - {average}</p>
-      <p>Positive procent - {positiveProcent}%</p>
-    </>
+    <table>
+      <tbody>
+        <StatisticsLine text="Good" value={good}/>
+        <StatisticsLine text="Neutral" value={neutral} />
+        <StatisticsLine text="Bad" value={bad} />
+        <StatisticsLine text="All" value={all} />
+        <StatisticsLine text="Average" value={average} />
+        <StatisticsLine text="Positive procent" value={positiveProcent} />
+      </tbody>
+    </table>
   )
 }
+
+const StatisticsLine = ({ text, value }) => {
+  return <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
+}
+
+const Button = ({ onClick, text }) => {
+  return <button onClick={onClick}>{text}</button>
+}
+
 
 const App = () => {
   // save clicks of each button to its own state
@@ -35,9 +49,9 @@ const App = () => {
   return (
     <div>
       <h1>Give feedback</h1>
-      <button onClick={handleGoodClick}>good</button>
-      <button onClick={handleNeutralClick}>neutral</button>
-      <button onClick={handleBadClick}>bad</button>
+      <Button onClick={handleGoodClick} text="Good" />
+      <Button onClick={handleNeutralClick} text="Neutral" />
+      <Button onClick={handleBadClick} text="Bad" />
 
       <h1>Statistics</h1>
       <Statistics 
