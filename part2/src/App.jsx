@@ -1,5 +1,5 @@
-import CoursesView from "./components/Courses";
-import NotesView from "./components/Notes";
+// import CoursesView from "./components/Courses";
+// import NotesView from "./components/Notes";
 import PhoneBook from "./components/Phonebook/Phonebook";
 
 const App = () => {
