@@ -1,7 +1,16 @@
-const PersonList = ({ persons }) => {
+import Person from "./Person";
+
+const PersonList = ({ persons, deletePerson, togglePersonImportance }) => {
   return (
     <div>
-      {persons.map(person => <p key={person.name}>{person.name} - {person.number}</p>)}
+      {persons.map(person => (
+        <Person 
+          key={person.id} 
+          personData={person} 
+          deletePerson={deletePerson}
+          togglePersonImportance={togglePersonImportance} 
+        />
+      ))}
     </div>
   )
 }

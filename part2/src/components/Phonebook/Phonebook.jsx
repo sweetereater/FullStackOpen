@@ -1,15 +1,21 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react'
 
 import Filter from './Filter';
 import PersonForm from './PersonForm';
 import PersonList from './PersonList';
+import { 
+  changePersonImportance, 
+  changePersonPhoneNumber,  
+  createNewPerson, 
+  deletePerson, 
+  getPersons 
+} from '../../service';
 
 const PhoneBook = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
+    getPersons()
       .then(response => setPersons(response.data))
   }, [])
 
@@ -32,16 +38,51 @@ const PhoneBook = () => {
   const handleAddNewNumber = (e) => {
     e.preventDefault();
     const doesPersonAlreadyExist = persons.find(person => person.name === newName);
+    const personId = doesPersonAlreadyExist.id;
+
     if (doesPersonAlreadyExist) {
-      alert(`Sorry, but ${newName} is already in your phone book`)
+      if (newNumber === doesPersonAlreadyExist.number) {
+        alert('Sorry, but it seems that this person already exists')
+      } else {
+        const changeNumberAnswer = confirm('Change this person phone number?');
+        if (changeNumberAnswer) {
+          changePersonPhoneNumber({
+            id: personId,
+            number: newNumber
+          }).then(response => {
+            setPersons(persons.map(person => person.id === personId  ? response.data : person))
+          })
+        }
+      }
     } else {
-      setPersons(persons.concat({ name : newName, number: newNumber }));
-      setNewName('');
-      setNewNumber('');
+      createNewPerson({ name: newName, number: newNumber })
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('');
+          setNewNumber('');
+        })
     }
   }
 
   const visiblePersons = persons.filter(person => person.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
+
+  const togglePersonImportance = (id) => {
+    const toggledPerson = persons.find(person => person.id === id);
+
+    changePersonImportance({ 
+      id, 
+      data: {...toggledPerson, importance: !toggledPerson.importance }
+    })
+      .then(response => {
+        setPersons(persons.map(person => person.id === id ? response.data : person))
+      })
+  }
+
+  const handleDeletePerson = (id) => {
+    deletePerson(id).then(() => {
+      setPersons(persons.filter(person => person.id !== id))
+    })
+  }
 
   return (
     <div>
@@ -55,7 +96,7 @@ const PhoneBook = () => {
         handleNewNumberChange={handleNewNumberChange}
       />
       <h2>Numbers</h2>
-      <PersonList persons={visiblePersons} />
+      <PersonList persons={visiblePersons} deletePerson={handleDeletePerson} togglePersonImportance={togglePersonImportance} />
     </div>
   )
 }
