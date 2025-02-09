@@ -10,9 +10,11 @@ import {
   deletePerson, 
   getPersons 
 } from '../../service';
+import Notification from './Notification/Notification';
 
 const PhoneBook = () => {
   const [persons, setPersons] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     getPersons()
@@ -35,10 +37,22 @@ const PhoneBook = () => {
     setNewNumber(e.target.value);
   }
 
+  const createNotification = ({ type, text }) => {
+    setNotification({
+      type,
+      text,
+    })
+    
+    setTimeout(() => {
+      setNotification(null)
+    }, 3000)  
+  }
+
   const handleAddNewNumber = (e) => {
     e.preventDefault();
     const doesPersonAlreadyExist = persons.find(person => person.name === newName);
-    const personId = doesPersonAlreadyExist.id;
+    const personId = doesPersonAlreadyExist?.id;
+    const personName = doesPersonAlreadyExist?.name;
 
     if (doesPersonAlreadyExist) {
       if (newNumber === doesPersonAlreadyExist.number) {
@@ -50,14 +64,31 @@ const PhoneBook = () => {
             id: personId,
             number: newNumber
           }).then(response => {
-            setPersons(persons.map(person => person.id === personId  ? response.data : person))
+            setPersons(persons.map(person => person.id === personId  ? response.data : person));
+
+            createNotification({
+              type: 'success',
+              text: `${personName} phone number was successfully changed`,
+            })
+
+          }).catch(() => {
+            createNotification({
+              type: 'error',
+              text: `${personName} has already been removed from server`,
+            })
           })
         }
       }
     } else {
       createNewPerson({ name: newName, number: newNumber })
         .then(response => {
-          setPersons(persons.concat(response.data))
+          setPersons(persons.concat(response.data));
+
+          createNotification({
+            type: 'success',
+            text: `Added ${newName}`,
+          })
+
           setNewName('');
           setNewNumber('');
         })
@@ -87,6 +118,7 @@ const PhoneBook = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {notification && <Notification data={notification} />}
       <Filter filter={filter} setFilter={handleFilterChange} />
       <PersonForm 
         onSubmit={handleAddNewNumber}
